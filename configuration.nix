@@ -96,15 +96,19 @@
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
     #  thunderbird
-    chromium
+    # chromium
     ];
   };
 
   # Install firefox.
-  programs.firefox.enable = true;
+  # programs.firefox.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+
+  # Avoid nano at all costs
+  programs.vim.enable = true;
+  programs.vim.defaultEditor = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -113,6 +117,8 @@
   #  wget
     google-chrome
     kdePackages.kwallet
+    git
+
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
