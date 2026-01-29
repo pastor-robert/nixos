@@ -110,6 +110,12 @@
   programs.vim.enable = true;
   programs.vim.defaultEditor = true;
 
+  # tell me what to do
+  programs.command-not-found.enable = true;
+  environment.sessionVariables = {
+    NIX_AUTO_RUN=1;
+  };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
