@@ -24,6 +24,30 @@
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
+  fileSystems."/data" =
+    { device = "/dev/disk/by-label/home";
+      fsType = "ext4";
+    };
+
+  fileSystems."/ubuntu" =
+    { device = "/dev/disk/by-label/ubuntu";
+      fsType = "ext4";
+      options = [ "rw" ];
+    };
+
+  fileSystems."/debian" =
+    { device = "/dev/disk/by-label/debian";
+      fsType = "ext4";
+      options = [ "rw" ];
+    };
+
+  fileSystems."/home" =
+    { device = "/debian/home";
+      fsType = "none";
+      options = [ "bind" "rw" ];
+    };
+
+
   swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
