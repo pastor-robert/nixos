@@ -24,6 +24,65 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
+
+  # Incus
+  networking.firewall.trustedInterfaces = [ "incusbr0" ];
+  networking.nftables.enable = true;
+  virtualisation.incus.enable = true;
+  virtualisation.incus.preseed = {
+    networks = [
+      {
+        config = {
+          "ipv4.address" = "auto";
+          "ipv6.address" = "auto";
+        };
+        "name" = "incusbr0";
+        "type" = "";
+      }
+    ];
+    storage_pools = [
+      {
+        config = {
+          "source" = "/home/incus/storage-pools/home";
+        };
+        "description" = "";
+        "name" = "home";
+        "driver" = "dir";
+      }
+      {
+        config = {
+          "source" = "/data/incus/storage-pools/home";
+        };
+        "description" = "";
+        "name" = "data";
+        "driver" = "dir";
+      }
+    ];
+    storage_volumes = [];
+    profiles = [
+      {
+        description = "";
+        devices = {
+          eth0 = {
+            "name" = "eth0";
+            "network" = "incusbr0";
+            "type" = "nic";
+          };
+          root = {
+            path = "/";
+            pool = "home";
+            type = "disk";
+          };
+        };
+        name = "default";
+        project = "default";
+      }
+    ];
+    projects = [];
+    certificates = [];
+  #  cluster = null;
+  };
 
   # Set your time zone.
   time.timeZone = "America/Chicago";
@@ -83,7 +142,7 @@
   users.users.rob = {
     isNormalUser = true;
     description = "Rob Adams";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "incus-admin" "incus" ];
     packages = with pkgs; [
       kdePackages.kate
     #  thunderbird
@@ -106,6 +165,8 @@
     google-chrome
     gparted
     git
+    openconnect
+    networkmanager-openconnect
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
