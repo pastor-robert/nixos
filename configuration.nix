@@ -30,7 +30,11 @@
   networking.firewall.trustedInterfaces = [ "incusbr0" ];
   networking.nftables.enable = true;
   virtualisation.incus.enable = true;
+  virtualisation.incus.ui.enable = true;
   virtualisation.incus.preseed = {
+    config = {
+      "core.https_address" = ":8443";
+    };
     networks = [
       {
         config = {
