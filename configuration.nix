@@ -110,6 +110,8 @@
   # You can disable this if you're only using the Wayland session.
   services.xserver.enable = true;
 
+  
+
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
@@ -121,7 +123,28 @@
   };
 
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+  services.printing = {
+    enable = true;
+    drivers = with pkgs; [
+      cups-filters
+      cups-browsed
+    ];
+  };
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+  #services.avahi = {
+  #  enable = true;
+  #  nssmdns = false; # Disable default
+  #};
+  #system.nssModules = with pkgs.lib; optional (!config.services.avahi.nssmdns) pkgs.nssmdns;
+  #system.nssDatabases.hosts = with pkgs.lib; optionals (!config.services.avahi.nssmdns) (mkMerge [
+  #  (mkOrder 900 [ "mdns4_minimal [NOTFOUND=return]" ])
+  #  (mkOrder 1501 [ "mdns4" ])
+  #]);
+
 
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
