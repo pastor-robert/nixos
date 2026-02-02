@@ -25,6 +25,7 @@
   # Enable networking
   networking.networkmanager.enable = true;
   networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
+  services.openssh.enable = true;
   services.tailscale.enable = true; 
 
   networking.extraHosts = ''
