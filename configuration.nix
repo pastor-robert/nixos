@@ -198,6 +198,7 @@
     git
     openconnect
     networkmanager-openconnect
+    ghostty
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
