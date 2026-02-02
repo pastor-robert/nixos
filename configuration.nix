@@ -25,6 +25,18 @@
   # Enable networking
   networking.networkmanager.enable = true;
   networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
+  services.tailscale.enable = true; 
+
+  networking.extraHosts = ''
+    # Tailscale network.
+    100.70.52.120 iti-evo
+    100.64.15.69 iti-m3
+    100.87.82.107 iti-prec
+    100.108.142.75 m2
+    100.116.43.88 x1-old
+    100.70.83.59 x1
+    100.123.250.50 hp
+    '';
 
   # Incus
   networking.firewall.trustedInterfaces = [ "incusbr0" ];
