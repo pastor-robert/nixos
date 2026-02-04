@@ -12,6 +12,7 @@
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit=20;
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "lonsdaleite";
@@ -44,6 +45,7 @@
   networking.nftables.enable = true;
   virtualisation.incus.enable = true;
   virtualisation.incus.ui.enable = true;
+  virtualisation.incus.package = pkgs.incus;
   virtualisation.incus.preseed = {
     config = {
       "core.https_address" = ":8443";
