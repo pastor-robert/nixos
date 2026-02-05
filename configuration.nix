@@ -226,7 +226,7 @@
     git
     openconnect
     networkmanager-openconnect
-    ghostty
+    # ghostty
     windowmaker
     dive
     podman-tui
