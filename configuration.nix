@@ -103,6 +103,17 @@
   #  cluster = null;
   };
 
+  # podman
+  virtualisation = {
+    containers.enable = true;
+    podman = {
+      enable = true;
+      dockerCompat = true;
+      defaultNetwork.settings.dns_enabled = true;
+    };
+  };
+
+
   # Set your time zone.
   time.timeZone = "America/Chicago";
 
@@ -184,7 +195,7 @@
   users.users.rob = {
     isNormalUser = true;
     description = "Rob Adams";
-    extraGroups = [ "networkmanager" "wheel" "incus-admin" "incus" ];
+    extraGroups = [ "networkmanager" "wheel" "incus-admin" "incus" "podman" ];
     packages = with pkgs; [
       kdePackages.kate
     #  thunderbird
@@ -217,6 +228,9 @@
     networkmanager-openconnect
     ghostty
     windowmaker
+    dive
+    podman-tui
+    podman-compose
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
