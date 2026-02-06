@@ -141,6 +141,15 @@
   services.desktopManager.plasma6.enable = true;
   services.xserver.windowManager.windowmaker.enable = true;
 
+  services.greetd = {
+    enable=false;
+    settings = {
+      default_session = {
+                command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd startplasma-wayland --sessions ${config.services.displayManager.sessionData.desktops}/share/wayland-sessions --xsessions ${config.services.displayManager.sessionData.desktops}/share/xsessions";
+        user = "greeter";
+      };
+    };
+  };
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -231,6 +240,13 @@
     dive
     podman-tui
     podman-compose
+
+    # Various slack clients
+    slack
+    # slacky
+    slackdump
+    # slack-term
+    # pdfly
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
