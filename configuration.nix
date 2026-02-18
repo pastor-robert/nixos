@@ -15,6 +15,9 @@
   boot.loader.systemd-boot.configurationLimit=20;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.binfmt.emulatedSystems = [ "armv7l-linux" ];
+
+
   networking.hostName = "lonsdaleite";
 
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -140,6 +143,11 @@
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
   services.xserver.windowManager.windowmaker.enable = true;
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
+  };
+  environment.pathsToLink = [ "/share/xdg-desktop-portal" "/share/applications" ];
 
   services.greetd = {
     enable=false;
@@ -202,6 +210,7 @@
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.rob = {
+    initialPassword = "password";
     isNormalUser = true;
     description = "Rob Adams";
     extraGroups = [ "networkmanager" "wheel" "incus-admin" "incus" "podman" ];
@@ -247,6 +256,7 @@
     slackdump
     # slack-term
     # pdfly
+    powertop
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -276,4 +286,5 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "25.11"; # Did you read the comment?
 
+  powerManagement.powertop.enable = true;
 }
