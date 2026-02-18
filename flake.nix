@@ -11,6 +11,10 @@
   };
 
   outputs = { self, nixpkgs, nix-index-database, ... }@inputs: {
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
     nixosConfigurations.lonsdaleite = nixpkgs.lib.nixosSystem {
       modules = [
         # Import existing config so this version is a NOP
@@ -23,5 +27,17 @@
         { programs.nix-index-database.comma.enable = true; }
       ];
     };
+    homeConfigurations."rob" = home-manager.lib.homeManagerConfiguration {
+      inherit pkgs;
+
+      # Specify your home configuration modules here, for example,
+      # the path to your home.nix.
+      modules = [ ./home.nix ];
+
+      # Optionally use extraSpecialArgs
+      # to pass through arguments to home.nix
+    };
+
+};
   };
 }
