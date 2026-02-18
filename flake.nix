@@ -2,42 +2,75 @@
   description = "Simple Nixos flake for x1";
 
   inputs = {
-    # Official
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    home-manager = {
+      url = "github:nix-community/home-manager/release-25.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    # git-hooks-nix.url = "github:cachix/git-hooks.nix";
 
     # for command_not_found_handler
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
+    git-hooks-nix.url = "github:cachix/git-hooks.nix";
+    git-hooks-nix.inputs.nixpkgs.follows = "nixpkgs";
+
   };
 
-  outputs = { self, nixpkgs, nix-index-database, ... }@inputs: {
+  outputs =
+    {
+      self,
+      nixpkgs,
+      nix-index-database,
+      home-manager,
+      git-hooks-nix,
+      ...
+    }@inputs:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-    in {
-    nixosConfigurations.lonsdaleite = nixpkgs.lib.nixosSystem {
-      modules = [
-        # Import existing config so this version is a NOP
-        ./configuration.nix
+    in
+    {
+      checks.${system}.pre-commit-check = git-hooks-nix.lib.${system}.run {
+        src = ./.;
+        hooks = {
+          nixfmt-rfc-style.enable = true;
+          statix.enable = true;
+          deadnix.enable = true;
+        };
+      };
+      nixosConfigurations.lonsdaleite = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          # Import existing config so this version is a NOP
+          ./configuration.nix
 
-        # for command_not_found_handler, and nix-locate
-        nix-index-database.nixosModules.default
+          # for command_not_found_handler, and nix-locate
+          nix-index-database.nixosModules.default
 
-        # wrap and install comma
-        { programs.nix-index-database.comma.enable = true; }
-      ];
+          # git-hooks-nix.nixosModules.git-hooks
+
+          # wrap and install comma
+          { programs.nix-index-database.comma.enable = true; }
+        ];
+      };
+      homeConfigurations."rob" = home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+
+        # Specify your home configuration modules here, for example,
+        # the path to your home.nix.
+        modules = [ ./home.nix ];
+
+        # Optionally use extraSpecialArgs
+        # to pass through arguments to home.nix
+      };
+
+      devShells.${system}.default = pkgs.mkShell {
+        inherit (self.checks.${system}.pre-commit-check) shellHook;
+        buildInputs = self.checks.${system}.pre-commit-check.enabledPackages;
+      };
+
+      #};
     };
-    homeConfigurations."rob" = home-manager.lib.homeManagerConfiguration {
-      inherit pkgs;
-
-      # Specify your home configuration modules here, for example,
-      # the path to your home.nix.
-      modules = [ ./home.nix ];
-
-      # Optionally use extraSpecialArgs
-      # to pass through arguments to home.nix
-    };
-
-};
-  };
 }

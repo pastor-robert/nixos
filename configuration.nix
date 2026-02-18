@@ -5,109 +5,117 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.systemd-boot.configurationLimit=20;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    systemd-boot = {
+      enable = true;
+      configurationLimit = 20;
+    };
+    efi.canTouchEfiVariables = true;
+  };
 
   boot.binfmt.emulatedSystems = [ "armv7l-linux" ];
 
+  networking = {
+    hostName = "lonsdaleite";
 
-  networking.hostName = "lonsdaleite";
+    # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+    # Configure network proxy if necessary
+    # networking.proxy.default = "http://user:password@proxy:port/";
+    # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
-  networking.networkmanager.enable = true;
-  networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
-  services.openssh.enable = true;
-  services.tailscale.enable = true; 
-
-  networking.extraHosts = ''
-    # Tailscale network.
-    100.70.52.120 iti-evo
-    100.64.15.69 iti-m3
-    100.87.82.107 iti-prec
-    100.108.142.75 m2
-    100.116.43.88 x1-old
-    100.70.83.59 x1
-    100.123.250.50 hp
+    # Enable networking
+    networkmanager.enable = true;
+    networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
+    extraHosts = ''
+      # Tailscale network.
+      100.70.52.120 iti-evo
+      100.64.15.69 iti-m3
+      100.87.82.107 iti-prec
+      100.108.142.75 m2
+      100.116.43.88 x1-old
+      100.70.83.59 x1
+      100.123.250.50 hp
     '';
-
-  # Incus
-  networking.firewall.trustedInterfaces = [ "incusbr0" ];
-  networking.nftables.enable = true;
-  virtualisation.incus.enable = true;
-  virtualisation.incus.ui.enable = true;
-  virtualisation.incus.package = pkgs.incus;
-  virtualisation.incus.preseed = {
-    config = {
-      "core.https_address" = ":8443";
-    };
-    networks = [
-      {
-        config = {
-          "ipv4.address" = "auto";
-          "ipv6.address" = "auto";
-        };
-        "name" = "incusbr0";
-        "type" = "";
-      }
-    ];
-    storage_pools = [
-      {
-        config = {
-          "source" = "/home/incus/storage-pools/home";
-        };
-        "description" = "";
-        "name" = "home";
-        "driver" = "dir";
-      }
-      {
-        config = {
-          "source" = "/data/incus/storage-pools/home";
-        };
-        "description" = "";
-        "name" = "data";
-        "driver" = "dir";
-      }
-    ];
-    storage_volumes = [];
-    profiles = [
-      {
-        description = "";
-        devices = {
-          eth0 = {
-            "name" = "eth0";
-            "network" = "incusbr0";
-            "type" = "nic";
-          };
-          root = {
-            path = "/";
-            pool = "home";
-            type = "disk";
-          };
-        };
-        name = "default";
-        project = "default";
-      }
-    ];
-    projects = [];
-    certificates = [];
-  #  cluster = null;
+    firewall.trustedInterfaces = [ "incusbr0" ];
+    nftables.enable = true;
+  };
+  services = {
+    openssh.enable = true;
+    tailscale.enable = true;
   };
 
-  # podman
+  # Incus
   virtualisation = {
+    incus = {
+      enable = true;
+      ui.enable = true;
+      package = pkgs.incus;
+      preseed = {
+        config = {
+          "core.https_address" = ":8443";
+        };
+        networks = [
+          {
+            config = {
+              "ipv4.address" = "auto";
+              "ipv6.address" = "auto";
+            };
+            "name" = "incusbr0";
+            "type" = "";
+          }
+        ];
+        storage_pools = [
+          {
+            config = {
+              "source" = "/home/incus/storage-pools/home";
+            };
+            "description" = "";
+            "name" = "home";
+            "driver" = "dir";
+          }
+          {
+            config = {
+              "source" = "/data/incus/storage-pools/home";
+            };
+            "description" = "";
+            "name" = "data";
+            "driver" = "dir";
+          }
+        ];
+        storage_volumes = [ ];
+        profiles = [
+          {
+            description = "";
+            devices = {
+              eth0 = {
+                "name" = "eth0";
+                "network" = "incusbr0";
+                "type" = "nic";
+              };
+              root = {
+                path = "/";
+                pool = "home";
+                type = "disk";
+              };
+            };
+            name = "default";
+            project = "default";
+          }
+        ];
+        projects = [ ];
+        certificates = [ ];
+        #  cluster = null;
+      };
+    };
+
+    # podman
     containers.enable = true;
     podman = {
       enable = true;
@@ -116,44 +124,50 @@
     };
   };
 
-
   # Set your time zone.
   time.timeZone = "America/Chicago";
 
   # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
+  i18n = {
+    defaultLocale = "en_US.UTF-8";
 
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_US.UTF-8";
-    LC_IDENTIFICATION = "en_US.UTF-8";
-    LC_MEASUREMENT = "en_US.UTF-8";
-    LC_MONETARY = "en_US.UTF-8";
-    LC_NAME = "en_US.UTF-8";
-    LC_NUMERIC = "en_US.UTF-8";
-    LC_PAPER = "en_US.UTF-8";
-    LC_TELEPHONE = "en_US.UTF-8";
-    LC_TIME = "en_US.UTF-8";
+    extraLocaleSettings = {
+      LC_ADDRESS = "en_US.UTF-8";
+      LC_IDENTIFICATION = "en_US.UTF-8";
+      LC_MEASUREMENT = "en_US.UTF-8";
+      LC_MONETARY = "en_US.UTF-8";
+      LC_NAME = "en_US.UTF-8";
+      LC_NUMERIC = "en_US.UTF-8";
+      LC_PAPER = "en_US.UTF-8";
+      LC_TELEPHONE = "en_US.UTF-8";
+      LC_TIME = "en_US.UTF-8";
+    };
   };
 
   # Enable the X11 windowing system.
   # You can disable this if you're only using the Wayland session.
-  services.xserver.enable = true;
+  services = {
+    xserver.enable = true;
 
-  # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
-  services.xserver.windowManager.windowmaker.enable = true;
+    # Enable the KDE Plasma Desktop Environment.
+    displayManager.sddm.enable = true;
+    desktopManager.plasma6.enable = true;
+    xserver.windowManager.windowmaker.enable = true;
+  };
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
   };
-  environment.pathsToLink = [ "/share/xdg-desktop-portal" "/share/applications" ];
+  environment.pathsToLink = [
+    "/share/xdg-desktop-portal"
+    "/share/applications"
+  ];
 
   services.greetd = {
-    enable=false;
+    enable = false;
     settings = {
       default_session = {
-                command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd startplasma-wayland --sessions ${config.services.displayManager.sessionData.desktops}/share/wayland-sessions --xsessions ${config.services.displayManager.sessionData.desktops}/share/xsessions";
+        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd startplasma-wayland --sessions ${config.services.displayManager.sessionData.desktops}/share/wayland-sessions --xsessions ${config.services.displayManager.sessionData.desktops}/share/xsessions";
         user = "greeter";
       };
     };
@@ -188,7 +202,6 @@
   #  (mkOrder 1501 [ "mdns4" ])
   #]);
 
-
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -213,35 +226,51 @@
     initialPassword = "password";
     isNormalUser = true;
     description = "Rob Adams";
-    extraGroups = [ "networkmanager" "wheel" "incus-admin" "incus" "podman" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "incus-admin"
+      "incus"
+      "podman"
+    ];
     packages = with pkgs; [
       kdePackages.kate
-    #  thunderbird
+      #  thunderbird
     ];
   };
 
-  # Install firefox.
-  programs.firefox.enable = true;
+  programs = {
+    # Install firefox.
+    firefox.enable = true;
 
-  # pipx runs its own copy of swig. Of course it is dynamic
-  programs.nix-ld.enable = true;
+    # pipx runs its own copy of swig. Of course it is dynamic
+    nix-ld.enable = true;
+
+    git = {
+      enable = true;
+      config.init.defaultBranch = "main";
+    };
+
+    xonsh.enable = true;
+  };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   # flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
+    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    #  wget
     vim
     google-chrome
     gparted
-    git
     openconnect
     networkmanager-openconnect
     # ghostty
@@ -257,7 +286,10 @@
     # slack-term
     # pdfly
     powertop
+    pre-commit
   ];
+
+  powerManagement.powertop.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -286,5 +318,4 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "25.11"; # Did you read the comment?
 
-  powerManagement.powertop.enable = true;
 }

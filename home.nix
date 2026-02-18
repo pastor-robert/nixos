@@ -1,95 +1,97 @@
-{ config, pkgs, ... }:
+# config,pkgs,...
+{ pkgs, ... }:
 
-  let
-    # Define the custom package from PyPI
-    ffgrep = pkgs.python3Packages.buildPythonPackage rec {
-      pname = "ffgrep";
-      version = "1.1.0";
-      src = pkgs.python3Packages.fetchPypi {
-        inherit pname version;
-        # You must provide the correct hash for security/reproducibility
-        sha256 = "sha256-gYohWiVUng0b4BXA2W9BtBLGMgrO13SboPc99JsRipY="; 
-      };
-      build-system = [ pkgs.python3Packages.setuptools ];
-      propagatedBuildInputs = [];
-      pyproject = true;
-    # doCheck = false; # Skip tests if they require extra setup
+let
+  # Define the custom package from PyPI
+  ffgrep = pkgs.python3Packages.buildPythonApplication rec {
+    pname = "ffgrep";
+    version = "1.1.0";
+    src = pkgs.python3Packages.fetchPypi {
+      inherit pname version;
+      # You must provide the correct hash for security/reproducibility
+      sha256 = "sha256-gYohWiVUng0b4BXA2W9BtBLGMgrO13SboPc99JsRipY=";
     };
-  in
-  {
-    # Let Home Manager install and manage itself.
-    programs.home-manager.enable = true;
-    programs.direnv = {
+    build-system = [ pkgs.python3Packages.setuptools ];
+    propagatedBuildInputs = [ ];
+    pyproject = true;
+    # doCheck = false; # Skip tests if they require extra setup
+  };
+in
+{
+  # Let Home Manager install and manage itself.
+  programs = {
+    home-manager.enable = true;
+    direnv = {
       enable = true;
       nix-direnv.enable = true;
     };
-
-
-  programs.gh = {
-    enable=true;
-    settings={
-      version="1";
-      aliases={
-        "as"="auth status";
+    gh = {
+      enable = true;
+      settings = {
+        version = "1";
+        aliases = {
+          "as" = "auth status";
+        };
+        movie = "film";
       };
-      movie="film";
+      gitCredentialHelper.enable = true;
+      extensions = [ pkgs.gh-eco ];
     };
-    gitCredentialHelper.enable=true;
-    extensions=[pkgs.gh-eco];
+    bash.enable = true;
   };
-
-  programs.bash.enable=true;
 
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = "rob";
-  home.homeDirectory = "/home/rob";
+  home = {
+    username = "rob";
+    homeDirectory = "/home/rob";
 
+    # The home.packages option allows you to install Nix packages into your
+    # environment.
+    packages = [
 
-  # The home.packages option allows you to install Nix packages into your
-  # environment.
-  home.packages = [
+      # (pkgs.python3.withPackages (_ps: [ ffgrep ]))
+      ffgrep
 
-    (pkgs.python3.withPackages (ps: [ ffgrep ]))
+      # # Adds the 'hello' command to your environment. It prints a friendly
+      # # "Hello, world!" when run.
+      # pkgs.hello
 
-    # # Adds the 'hello' command to your environment. It prints a friendly
-    # # "Hello, world!" when run.
-    # pkgs.hello
+      # # It is sometimes useful to fine-tune packages, for example, by applying
+      # # overrides. You can do that directly here, just don't forget the
+      # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
+      # # fonts?
+      # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
 
-    # # It is sometimes useful to fine-tune packages, for example, by applying
-    # # overrides. You can do that directly here, just don't forget the
-    # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
-    # # fonts?
-    # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
+      # # You can also create simple shell scripts directly inside your
+      # # configuration. For example, this adds a command 'my-hello' to your
+      # # environment:
+      # (pkgs.writeShellScriptBin "my-hello" ''
+      #   echo "Hello, ${config.home.username}!"
+      # '')
+      pkgs.mtr
+      pkgs.charasay
+      # pkgs.cowsay
+      pkgs.kittysay
+      pkgs.neo-cowsay
+      pkgs.pokemonsay
+      pkgs.ponysay
+      pkgs.tewisay
+      pkgs.xcowsay
+      #pkgs.slack
+      #pkgs.slack-term
+      pkgs.file
+      pkgs.pdftk
+    ];
+    sessionPath = [ "$HOME/.local/bin" ];
+  };
 
-    # # You can also create simple shell scripts directly inside your
-    # # configuration. For example, this adds a command 'my-hello' to your
-    # # environment:
-    # (pkgs.writeShellScriptBin "my-hello" ''
-    #   echo "Hello, ${config.home.username}!"
-    # '')
-    pkgs.mtr
-    pkgs.charasay
-    # pkgs.cowsay
-    pkgs.kittysay
-    pkgs.neo-cowsay
-    pkgs.pokemonsay
-    pkgs.ponysay
-    pkgs.tewisay
-    pkgs.xcowsay
-    #pkgs.slack
-    #pkgs.slack-term
-    pkgs.file
-    pkgs.pdftk
-    pkgs.xonsh
-  ];
-
-  home.sessionPath = [ "$HOME/.local/bin" ];
-
-  # programs.git.enable = true;
-  programs.git.settings = {
-    user.name = "Rob Adams";
-    user.email = "rob@rob-adams.us";
+  programs.git = {
+    enable = true;
+    settings = {
+      user.name = "Rob Adams";
+      user.email = "rob@rob-adams.us";
+    };
   };
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -106,39 +108,38 @@
     #   org.gradle.daemon.idletimeout=3600000
     # '';
 
-    ".vimrc".text = ''
-      " home.file.".vimrc".text
-      filetype plugin indent on
-      set expandtab    " Use spaces instead of tabs
-      set tabstop=99    " Display width of tab characters
-      set shiftwidth=4 " Number of spaces for auto-indent
-      set softtabstop=4 " Number of spaces when you press Tab
-      autocmd FileType c setlocal softtabstop=0 tabstop=8 noexpandtab shiftwidth=8
-      autocmd FileType cpp setlocal softtabstop=0 tabstop=8 noexpandtab shiftwidth=8
-      autocmd FileType bpf setlocal softtabstop=0 tabstop=8 noexpandtab shiftwidth=8
-      '';
+    #".vimrc".text = ''
+    #  " home.file.".vimrc".text
+    #  filetype plugin indent on
+    #  set expandtab    " Use spaces instead of tabs
+    #  set tabstop=99    " Display width of tab characters
+    #  set shiftwidth=4 " Number of spaces for auto-indent
+    #  set softtabstop=4 " Number of spaces when you press Tab
+    #  autocmd FileType c setlocal softtabstop=0 tabstop=8 noexpandtab shiftwidth=8
+    #  autocmd FileType cpp setlocal softtabstop=0 tabstop=8 noexpandtab shiftwidth=8
+    #  autocmd FileType bpf setlocal softtabstop=0 tabstop=8 noexpandtab shiftwidth=8
+    #  '';
 
   };
 
   programs.vim.settings = {
-      expandtab=true; 
-      tabstop=99;
-      shiftwidth=4;
-      softtabstop=4;
+    expandtab = true;
+    tabstop = 8;
+    shiftwidth = 4;
+    softtabstop = 4;
   };
-  programs.vim.extraConfig = ''
-      " programs.vim.extraConfig
-      filetype plugin indent on
-      set expandtab    " Use spaces instead of tabs
-      set tabstop=99    " Display width of tab characters
-      set shiftwidth=4 " Number of spaces for auto-indent
-      set softtabstop=4 " Number of spaces when you press Tab
-      #
-      autocmd FileType c setlocal softtabstop=0 tabstop=8 noexpandtab shiftwidth=8
-      autocmd FileType cpp setlocal softtabstop=0 tabstop=8 noexpandtab shiftwidth=8
-      autocmd FileType bpf setlocal softtabstop=0 tabstop=8 noexpandtab shiftwidth=8
-      '';
-
+  #programs.vim.extraConfig = ''
+  #    " programs.vim.extraConfig
+  #    filetype plugin indent on
+  #    set expandtab    " Use spaces instead of tabs
+  #    set tabstop=99    " Display width of tab characters
+  #    set shiftwidth=4 " Number of spaces for auto-indent
+  #    set softtabstop=4 " Number of spaces when you press Tab
+  #    #
+  #    autocmd FileType c setlocal softtabstop=0 tabstop=8 noexpandtab shiftwidth=8
+  #    autocmd FileType cpp setlocal softtabstop=0 tabstop=8 noexpandtab shiftwidth=8
+  #    autocmd FileType bpf setlocal softtabstop=0 tabstop=8 noexpandtab shiftwidth=8
+  #    '';
 
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
@@ -157,7 +158,7 @@
   #  /etc/profiles/per-user/rob/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    # EDITOR = "emacs";
+    EDITOR = "vi";
   };
 
   # This value determines the Home Manager release that your configuration is
