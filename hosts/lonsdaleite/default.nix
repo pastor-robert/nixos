@@ -286,7 +286,7 @@
     # slack-term
     # pdfly
     powertop
-    pre-commit
+    # pre-commit
   ];
 
   powerManagement.powertop.enable = true;
