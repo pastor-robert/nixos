@@ -18,7 +18,6 @@
 
   outputs =
     {
-      self,
       nixpkgs,
       nix-index-database,
       home-manager,
@@ -31,9 +30,7 @@
         inherit system;
         config.allowUnfree = true;
       };
-    in
-    {
-      checks.${system}.pre-commit-check = git-hooks-nix.lib.${system}.run {
+      pre-commit-check = git-hooks-nix.lib.${system}.run {
         src = ./.;
         hooks = {
           nixfmt-rfc-style.enable = true;
@@ -41,6 +38,9 @@
           deadnix.enable = true;
         };
       };
+    in
+    {
+      checks.${system} = { inherit pre-commit-check; };
 
       nixosConfigurations.lonsdaleite = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
@@ -73,29 +73,8 @@
         };
       };
 
-      devShells.${system} = {
-        default = pkgs.mkShell {
-          inherit (self.checks.${system}.pre-commit-check) shellHook;
-          buildInputs = self.checks.${system}.pre-commit-check.enabledPackages;
-        };
-
-        kernel = pkgs.mkShellNoCC {
-          nativeBuildInputs = with pkgs; [
-            bc
-            bison
-            flex
-            ncurses
-            openssl
-            elfutils
-            gcc
-            gnumake
-            rustc
-            rust-bindgen
-            rustfmt
-            clippy
-          ];
-          RUST_LIB_SRC = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
-        };
+      devShells.${system} = import ./shells.nix {
+        inherit pkgs pre-commit-check;
       };
     };
 }
