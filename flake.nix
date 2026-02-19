@@ -70,9 +70,29 @@
         };
       };
 
-      devShells.${system}.default = pkgs.mkShell {
-        inherit (self.checks.${system}.pre-commit-check) shellHook;
-        buildInputs = self.checks.${system}.pre-commit-check.enabledPackages;
+      devShells.${system} = {
+        default = pkgs.mkShell {
+          inherit (self.checks.${system}.pre-commit-check) shellHook;
+          buildInputs = self.checks.${system}.pre-commit-check.enabledPackages;
+        };
+
+        kernel = pkgs.mkShellNoCC {
+          nativeBuildInputs = with pkgs; [
+            bc
+            bison
+            flex
+            ncurses
+            openssl
+            elfutils
+            gcc
+            gnumake
+            rustc
+            rust-bindgen
+            rustfmt
+            clippy
+          ];
+          RUST_LIB_SRC = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
+        };
       };
     };
 }
