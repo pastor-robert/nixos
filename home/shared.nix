@@ -43,6 +43,7 @@ in
     packages = [
       ffgrep
 
+      pkgs.claude-code
       pkgs.mtr
       pkgs.charasay
       pkgs.kittysay
