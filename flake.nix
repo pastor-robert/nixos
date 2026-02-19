@@ -1,5 +1,5 @@
 {
-  description = "Simple Nixos flake for x1";
+  description = "Multi-machine Nix flake for NixOS and Home Manager";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -7,7 +7,6 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # git-hooks-nix.url = "github:cachix/git-hooks.nix";
 
     # for command_not_found_handler
     nix-index-database.url = "github:nix-community/nix-index-database";
@@ -15,7 +14,6 @@
 
     git-hooks-nix.url = "github:cachix/git-hooks.nix";
     git-hooks-nix.inputs.nixpkgs.follows = "nixpkgs";
-
   };
 
   outputs =
@@ -40,37 +38,41 @@
           deadnix.enable = true;
         };
       };
+
       nixosConfigurations.lonsdaleite = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          # Import existing config so this version is a NOP
-          ./configuration.nix
+          ./hosts/lonsdaleite
 
           # for command_not_found_handler, and nix-locate
           nix-index-database.nixosModules.default
-
-          # git-hooks-nix.nixosModules.git-hooks
 
           # wrap and install comma
           { programs.nix-index-database.comma.enable = true; }
         ];
       };
-      homeConfigurations."rob" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
 
-        # Specify your home configuration modules here, for example,
-        # the path to your home.nix.
-        modules = [ ./home.nix ];
+      homeConfigurations = {
+        "rob@lonsdaleite" = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [
+            ./home/shared.nix
+            ./home/lonsdaleite.nix
+          ];
+        };
 
-        # Optionally use extraSpecialArgs
-        # to pass through arguments to home.nix
+        "robadams@u20-noah-1" = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          modules = [
+            ./home/shared.nix
+            ./home/u20-noah-1.nix
+          ];
+        };
       };
 
       devShells.${system}.default = pkgs.mkShell {
         inherit (self.checks.${system}.pre-commit-check) shellHook;
         buildInputs = self.checks.${system}.pre-commit-check.enabledPackages;
       };
-
-      #};
     };
 }

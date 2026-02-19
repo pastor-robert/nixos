@@ -4,16 +4,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is a personal NixOS configuration for a machine named "lonsdaleite" (ThinkPad X1). It uses Nix flakes with NixOS 25.11 and Home Manager.
+This is a multi-machine Nix configuration supporting NixOS systems and Home Manager on non-NixOS hosts. It uses Nix flakes with NixOS 25.11 and Home Manager.
+
+**Machines:**
+- **lonsdaleite**: NixOS laptop (ThinkPad X1) - full NixOS + Home Manager
+- **u20-noah-1**: Ubuntu 24.04 server - Home Manager only
 
 ## Commands
 
 ```bash
-# Apply system configuration
+# Apply NixOS system configuration (lonsdaleite only)
 sudo nixos-rebuild switch --flake .#lonsdaleite
 
-# Apply user configuration (Home Manager)
-home-manager switch --flake .#rob
+# Apply Home Manager configuration (specify machine)
+home-manager switch --flake .#rob@lonsdaleite
+home-manager switch --flake .#robadams@u20-noah-1
 
 # Run pre-commit checks (formatting + linting)
 nix flake check
@@ -28,22 +33,33 @@ nix flake update
 ## Architecture
 
 **File Structure:**
-- `flake.nix` - Flake inputs (nixpkgs, home-manager, nix-index-database, git-hooks-nix) and outputs
-- `configuration.nix` - System-level NixOS configuration (services, packages, users)
-- `hardware-configuration.nix` - Auto-generated hardware config (do not edit manually)
-- `home.nix` - User environment via Home Manager (user packages, dotfiles, programs)
+- `flake.nix` - Flake inputs and outputs for all machines
+- `hosts/` - NixOS system configurations
+  - `lonsdaleite/default.nix` - System-level NixOS configuration
+  - `lonsdaleite/hardware-configuration.nix` - Auto-generated hardware config (do not edit)
+- `home/` - Home Manager configurations
+  - `shared.nix` - Common programs/packages shared across all machines
+  - `lonsdaleite.nix` - Machine-specific (username, stateVersion, GUI packages)
+  - `u20-noah-1.nix` - Ubuntu server-specific config
 
 **Key Design Decisions:**
-- Flat structure: all config files at root level, no custom modules directory
-- System packages in `configuration.nix`, user packages in `home.nix`
+- Hosts in `hosts/<hostname>/`, home configs in `home/`
+- Shared home config (`shared.nix`) contains portable tools; machine-specific configs set username/homeDirectory/stateVersion
+- System packages in host configs, user packages in home configs
 - Pre-commit hooks: `nixfmt-rfc-style`, `statix`, `deadnix`
 
-**Enabled Services:**
+**Enabled Services (lonsdaleite):**
 - Desktop: KDE Plasma 6 with SDDM, WindowMaker available
 - Virtualization: Incus (with preseed config for storage pools/networks), Podman (Docker-compatible)
 - Networking: Tailscale, OpenSSH, NetworkManager with OpenConnect
 
 **Adding Packages:**
-- System-wide: add to `environment.systemPackages` in `configuration.nix`
-- User-only: add to `home.packages` in `home.nix`
-- PyPI packages: see `ffgrep` example in `home.nix` using `buildPythonApplication`
+- System-wide (NixOS only): add to `environment.systemPackages` in `hosts/<hostname>/default.nix`
+- User packages (all machines): add to `home.packages` in `home/shared.nix`
+- Machine-specific user packages: add to `home.packages` in `home/<hostname>.nix`
+- PyPI packages: see `ffgrep` example in `home/shared.nix` using `buildPythonApplication`
+
+**Adding a New Machine:**
+1. For NixOS: create `hosts/<hostname>/default.nix` and `hardware-configuration.nix`
+2. Create `home/<hostname>.nix` with username, homeDirectory, stateVersion
+3. Add entries to `flake.nix` in `nixosConfigurations` and/or `homeConfigurations`
