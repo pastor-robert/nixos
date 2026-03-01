@@ -61,6 +61,7 @@
           modules = [
             ./home/shared.nix
             ./home/lonsdaleite.nix
+            ./home/duplex.nix
           ];
         };
 
@@ -69,6 +70,7 @@
           modules = [
             ./home/shared.nix
             ./home/u20-noah-1.nix
+            ./home/duplex.nix
           ];
         };
       };
