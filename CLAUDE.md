@@ -63,3 +63,10 @@ nix flake update
 1. For NixOS: create `hosts/<hostname>/default.nix` and `hardware-configuration.nix`
 2. Create `home/<hostname>.nix` with username, homeDirectory, stateVersion
 3. Add entries to `flake.nix` in `nixosConfigurations` and/or `homeConfigurations`
+
+## Git Configuration
+
+This repository uses a specific SSH key for pushing to GitHub:
+```bash
+git config core.sshCommand "ssh -i ~/.ssh/id_ed25519_rob -o IdentitiesOnly=yes"
+```
