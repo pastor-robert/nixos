@@ -239,6 +239,9 @@
     # Install firefox.
     firefox.enable = true;
 
+    # Enable FUSE for user mounts (rclone)
+    fuse.userAllowOther = true;
+
     # pipx runs its own copy of swig. Of course it is dynamic
     nix-ld.enable = true;
 
