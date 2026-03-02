@@ -14,6 +14,7 @@
 
     git-hooks-nix.url = "github:cachix/git-hooks.nix";
     git-hooks-nix.inputs.nixpkgs.follows = "nixpkgs";
+    duplex.url = "github:pastor-robert/duplex";
   };
 
   outputs =
@@ -22,6 +23,7 @@
       nix-index-database,
       home-manager,
       git-hooks-nix,
+      duplex,
       ...
     }@inputs:
     let
@@ -58,6 +60,7 @@
       homeConfigurations = {
         "rob@lonsdaleite" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
+          extraSpecialArgs = { inherit duplex; };
           modules = [
             ./home/shared.nix
             ./home/lonsdaleite.nix
@@ -67,6 +70,7 @@
 
         "robadams@u20-noah-1" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
+          extraSpecialArgs = { inherit duplex; };
           modules = [
             ./home/shared.nix
             ./home/u20-noah-1.nix
