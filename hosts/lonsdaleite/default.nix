@@ -158,10 +158,6 @@
     enable = true;
     extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
   };
-  environment.pathsToLink = [
-    "/share/xdg-desktop-portal"
-    "/share/applications"
-  ];
 
   services.greetd = {
     enable = false;
@@ -243,6 +239,9 @@
     # Install firefox.
     firefox.enable = true;
 
+    # Enable FUSE for user mounts (rclone)
+    fuse.userAllowOther = true;
+
     # pipx runs its own copy of swig. Of course it is dynamic
     nix-ld.enable = true;
 
@@ -252,6 +251,9 @@
     };
 
     xonsh.enable = true;
+    bash.enableLsColors = false;
+    # bash.shellAliases.ls = null;
+
   };
 
   # Allow unfree packages
@@ -265,29 +267,41 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    #  wget
-    vim
-    google-chrome
-    gparted
-    openconnect
-    networkmanager-openconnect
-    # ghostty
-    windowmaker
-    dive
-    podman-tui
-    podman-compose
+  environment = {
+    systemPackages = with pkgs; [
+      #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+      #  wget
+      vim
+      google-chrome
+      gparted
+      openconnect
+      networkmanager-openconnect
+      # ghostty
+      windowmaker
+      dive
+      podman-tui
+      podman-compose
 
-    # Various slack clients
-    slack
-    # slacky
-    slackdump
-    # slack-term
-    # pdfly
-    powertop
-    # pre-commit
-  ];
+      # Various slack clients
+      slack
+      # slacky
+      slackdump
+      # slack-term
+      # pdfly
+      powertop
+      # pre-commit
+    ];
+    pathsToLink = [
+      "/share/xdg-desktop-portal"
+      "/share/applications"
+    ];
+    shellAliases = {
+      l = null;
+      ll = null;
+      ls = null;
+      lsl = null;
+    };
+  };
 
   powerManagement.powertop.enable = true;
 
