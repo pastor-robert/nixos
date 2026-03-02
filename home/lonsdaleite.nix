@@ -56,14 +56,14 @@ in
 
     rclone-gdrive-shared = {
       Unit = {
-        Description = "Mount shared Google Drive with rclone";
+        Description = "Mount 'Shared with me' Google Drive files with rclone";
         After = [ "network-online.target" ];
         Wants = [ "network-online.target" ];
       };
       Service = {
         Type = "simple";
         ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${gdriveSharedMountDir}";
-        ExecStart = "${pkgs.rclone}/bin/rclone mount gdrive-shared: ${gdriveSharedMountDir} --vfs-cache-mode full --vfs-cache-max-age 72h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off --buffer-size 128M --poll-interval 15s --dir-cache-time 72h --log-level INFO";
+        ExecStart = "${pkgs.rclone}/bin/rclone mount gdrive: ${gdriveSharedMountDir} --drive-shared-with-me --vfs-cache-mode full --vfs-cache-max-age 72h --vfs-read-chunk-size 128M --vfs-read-chunk-size-limit off --buffer-size 128M --poll-interval 15s --dir-cache-time 72h --log-level INFO";
         ExecStop = "/run/wrappers/bin/fusermount -u ${gdriveSharedMountDir}";
         Restart = "on-failure";
         RestartSec = "10s";
