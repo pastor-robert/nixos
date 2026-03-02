@@ -1,5 +1,5 @@
 # Machine-specific Home Manager configuration for lonsdaleite (NixOS laptop)
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   home = {
@@ -10,6 +10,12 @@
     packages = [
       # X11/GUI packages
       pkgs.xcowsay
+
+      pkgs.htop
+      pkgs.btop
     ];
+    shellAliases = lib.mkForce {
+      x = "vi";
+    };
   };
 }
