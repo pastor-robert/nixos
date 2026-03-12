@@ -43,7 +43,10 @@
       100.70.83.59 x1
       100.123.250.50 hp
     '';
-    firewall.trustedInterfaces = [ "incusbr0" ];
+    firewall.trustedInterfaces = [
+      "virbr0"
+      "incusbr0"
+    ];
     nftables.enable = true;
   };
   services = {
@@ -228,6 +231,8 @@
       "incus-admin"
       "incus"
       "podman"
+      "libvirtd"
+      "kvm"
     ];
     packages = with pkgs; [
       kdePackages.kate
@@ -290,6 +295,11 @@
       # pdfly
       powertop
       # pre-commit
+      swtpm
+      # "edk2-ovmf"
+      gnome-boxes
+      dnsmasq
+      phodav
     ];
     pathsToLink = [
       "/share/xdg-desktop-portal"
@@ -332,4 +342,18 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "25.11"; # Did you read the comment?
 
+  # Enable the libvirtd daemon
+  virtualisation.libvirtd = {
+    enable = true;
+    qemu = {
+      swtpm.enable = true;
+      # ovmf.packages = [ pkgs.OVMFFull.fd ];
+    };
+  };
+  virtualisation.spiceUSBRedirection.enable = true;
+
+  # Install virt-manager
+  programs.virt-manager.enable = true;
+
+  # Add your user to the libvirtd group to manage VMs without sudo
 }
