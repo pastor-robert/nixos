@@ -10,6 +10,7 @@
     packages = [
       # X11 for ssh -X forwarding
       pkgs.xcowsay
+      pkgs.htop
     ];
   };
 }

@@ -40,13 +40,37 @@ in
       rust-bindgen
       rustfmt
       clippy
+      zlib.dev
+      pkg-config
     ];
+    buildInputs = [ pkgs.zlib ];
     RUST_LIB_SRC = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
     shellHook = pureSafeHook + ''
       echo Welcome to the kernel shell
     '';
     profile = ''
       export PS1="[kernel] $PS1"
+    '';
+  };
+
+  kernelNoRust = pkgs.mkShellNoCC {
+    nativeBuildInputs = with pkgs; [
+      bc
+      bison
+      flex
+      ncurses
+      openssl
+      elfutils
+      gcc
+      gnumake
+      zlib.dev
+      pkg-config
+    ];
+    shellHook = pureSafeHook + ''
+      echo Welcome to the rust-free kernel shell
+    '';
+    profile = ''
+      export PS1="[kernelNoRust] $PS1"
     '';
   };
 

@@ -85,6 +85,15 @@ in
     shiftwidth = 4;
     softtabstop = 4;
   };
+  programs.bash.profileExtra = ''
+    command -v tmux &> /dev/null && \
+      [ "$PS1"  != ""       ] && \
+      [ "$TERM" != "screen" ] && \
+      [ "$TERM" != "screen-256color" ] && \
+      [ "$TERM" != "tmux"   ] && \
+      [ "$TMUX"  = ""       ] && \
+      tmux new-session -t robadams
+  '';
 
   home.sessionVariables = {
     EDITOR = "vi";
