@@ -4,5 +4,5 @@
   # environment.systemPackages = [ duplex ];
 
   # OR, if using home-manager, add it to user packages
-  home.packages = [ duplex.packages.${pkgs.system}.default ];
+  home.packages = [ duplex.packages.${pkgs.stdenv.hostPlatform.system}.default ];
 }
