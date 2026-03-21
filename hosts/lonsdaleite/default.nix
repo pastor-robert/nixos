@@ -233,6 +233,7 @@
       "podman"
       "libvirtd"
       "kvm"
+      "dialout"
     ];
     packages = with pkgs; [
       kdePackages.kate

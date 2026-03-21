@@ -54,6 +54,9 @@ in
       pkgs.tewisay
       pkgs.file
       pkgs.pdftk
+      pkgs.bc
+      pkgs.killall
+      pkgs.putty
     ];
     sessionPath = [ "$HOME/.local/bin" ];
   };
