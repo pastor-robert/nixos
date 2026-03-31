@@ -21,6 +21,8 @@ in
 
       # rclone for cloud storage mounting
       pkgs.rclone
+      pkgs.pandoc
+      pkgs.texlive.combined.scheme-full
     ];
     shellAliases = lib.mkForce {
       x = "vi";

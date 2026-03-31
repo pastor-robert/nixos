@@ -11,15 +11,17 @@
   ];
 
   # Bootloader.
-  boot.loader = {
-    systemd-boot = {
-      enable = true;
-      configurationLimit = 20;
+  boot = {
+    loader = {
+      systemd-boot = {
+        enable = true;
+        configurationLimit = 20;
+      };
+      efi.canTouchEfiVariables = true;
     };
-    efi.canTouchEfiVariables = true;
+    binfmt.emulatedSystems = [ "armv7l-linux" ];
+    extraModulePackages = [ config.boot.kernelPackages.rtl8821au ];
   };
-
-  boot.binfmt.emulatedSystems = [ "armv7l-linux" ];
 
   networking = {
     hostName = "lonsdaleite";
@@ -35,13 +37,14 @@
     networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
     extraHosts = ''
       # Tailscale network.
-      100.70.52.120 iti-evo
-      100.64.15.69 iti-m3
-      100.87.82.107 iti-prec
-      100.108.142.75 m2
-      100.116.43.88 x1-old
-      100.70.83.59 x1
-      100.123.250.50 hp
+      # 100.70.52.120 iti-evo
+      # 100.64.15.69 iti-m3
+      # 100.87.82.107 iti-prec
+      # 100.108.142.75 m2
+      # 100.116.43.88 x1-old
+      # 100.70.83.59 x1
+      # 100.123.250.50 hp
+      # 100.80.171.24 iti-lx2
     '';
     firewall.trustedInterfaces = [
       "virbr0"
