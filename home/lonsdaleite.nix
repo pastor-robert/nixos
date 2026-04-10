@@ -23,6 +23,7 @@ in
       pkgs.rclone
       pkgs.pandoc
       pkgs.texlive.combined.scheme-full
+      pkgs.unzip
     ];
     shellAliases = lib.mkForce {
       x = "vi";

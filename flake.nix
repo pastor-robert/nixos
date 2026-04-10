@@ -44,6 +44,18 @@
     {
       checks.${system} = { inherit pre-commit-check; };
 
+      nixosConfigurations.aws = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./hosts/aws
+
+          # for command_not_found_handler, and nix-locate
+          nix-index-database.nixosModules.default
+
+          # wrap and install comma
+          { programs.nix-index-database.comma.enable = true; }
+        ];
+      };
       nixosConfigurations.lonsdaleite = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [

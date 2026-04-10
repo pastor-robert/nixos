@@ -263,6 +263,8 @@
     bash.enableLsColors = false;
     # bash.shellAliases.ls = null;
 
+    nm-applet.enable = true;
+
   };
 
   # Allow unfree packages
@@ -304,6 +306,12 @@
       gnome-boxes
       dnsmasq
       phodav
+
+      webkitgtk_4_1
+      networkmanagerapplet
+      kdePackages.kwalletmanager
+      kdePackages.kwallet
+
     ];
     pathsToLink = [
       "/share/xdg-desktop-portal"
