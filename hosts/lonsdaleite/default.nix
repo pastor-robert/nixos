@@ -312,6 +312,8 @@
       kdePackages.kwalletmanager
       kdePackages.kwallet
 
+      winboat
+
     ];
     pathsToLink = [
       "/share/xdg-desktop-portal"

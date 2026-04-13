@@ -16,8 +16,9 @@
       grub = {
         efiSupport = true;
         efiInstallAsRemovable = true;
+        device = "nodev";
       };
-      efi.canTouchEfiVariables = true;
+      efi.canTouchEfiVariables = false;
     };
     binfmt.emulatedSystems = [ "armv7l-linux" ];
     extraModulePackages = [ config.boot.kernelPackages.rtl8821au ];
