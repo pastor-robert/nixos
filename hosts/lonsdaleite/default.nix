@@ -207,6 +207,9 @@
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
+  security.pam.services.sdcv.enableKwallet = true;
+  # security.kwallet.enable = true;
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;
