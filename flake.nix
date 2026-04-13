@@ -72,6 +72,15 @@
             ./home/duplex.nix
           ];
         };
+        "rob@aws" = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = { inherit duplex; };
+          modules = [
+            ./home/shared.nix
+            ./home/aws.nix
+            ./home/duplex.nix
+          ];
+        };
 
         "robadams@u20-noah-1" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
