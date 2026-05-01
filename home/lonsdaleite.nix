@@ -24,6 +24,7 @@ in
       pkgs.pandoc
       pkgs.texlive.combined.scheme-full
       pkgs.unzip
+      pkgs.ghostty
     ];
     shellAliases = lib.mkForce {
       x = "vi";
