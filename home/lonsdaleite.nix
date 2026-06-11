@@ -3,14 +3,21 @@
 
 let
   # Mount point paths
-  gdriveMountDir = "/home/rob/gdrive";
-  gdriveSharedMountDir = "/home/rob/gdrive-shared";
+  gdriveMountDir = "/home/rob/gdrive/MyDrive";
+  gdriveSharedMountDir = "/home/rob/gdrive/SharedDrives";
 in
 {
   home = {
     username = "rob";
     homeDirectory = "/home/rob";
     stateVersion = "25.11";
+
+    # Environment
+    sessionVariables = {
+      EDITOR = "vi";
+      BROWSER = "google-chrome";
+      TERMINAL = "kitty";
+    };
 
     packages = [
       # X11/GUI packages
@@ -25,9 +32,18 @@ in
       pkgs.texlive.combined.scheme-full
       pkgs.unzip
       pkgs.ghostty
+      pkgs.marktext
+      pkgs.libreoffice-qt
+      pkgs.hunspell
+      pkgs.hunspellDicts.en_US
+      pkgs.ranger
+      pkgs.atool
+      pkgs.poppler-utils
+      pkgs.kitty
     ];
     shellAliases = lib.mkForce {
       x = "vi";
+      ls = "ls --classify=auto --color=auto";
     };
   };
 
