@@ -45,6 +45,7 @@ in
       ffgrep
 
       pkgs.claude-code
+      pkgs.gemini-cli
       pkgs.mtr
       pkgs.charasay
       pkgs.kittysay
