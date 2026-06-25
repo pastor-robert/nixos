@@ -20,7 +20,9 @@
       efi.canTouchEfiVariables = true;
     };
     binfmt.emulatedSystems = [ "armv7l-linux" ];
-    extraModulePackages = [ config.boot.kernelPackages.rtl8821au ];
+    extraModulePackages = [
+      # config.boot.kernelPackages.rtl8821au
+    ];
   };
 
   networking = {

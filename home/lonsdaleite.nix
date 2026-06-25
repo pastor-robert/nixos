@@ -1,5 +1,10 @@
 # Machine-specific Home Manager configuration for lonsdaleite (NixOS laptop)
-{ pkgs, lib, ... }:
+{
+  pkgs,
+  pkgs-unstable,
+  lib,
+  ...
+}:
 
 let
   # Mount point paths
@@ -40,6 +45,7 @@ in
       pkgs.atool
       pkgs.poppler-utils
       pkgs.kitty
+      pkgs-unstable.antigravity-cli
     ];
     shellAliases = lib.mkForce {
       x = "vi";

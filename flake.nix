@@ -2,10 +2,14 @@
   description = "Multi-machine Nix flake for NixOS and Home Manager";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      #url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs-unstable.follows = "nixpkgs-unstable";
     };
 
     # for command_not_found_handler
@@ -25,11 +29,16 @@
       home-manager,
       git-hooks-nix,
       duplex,
+      nixpkgs-unstable,
       ...
     }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+      pkgs-unstable = import nixpkgs-unstable {
         inherit system;
         config.allowUnfree = true;
       };
@@ -65,7 +74,10 @@
       homeConfigurations = {
         "rob@lonsdaleite" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          extraSpecialArgs = { inherit duplex; };
+          extraSpecialArgs = {
+            inherit duplex;
+            inherit pkgs-unstable;
+          };
           modules = [
             ./home/shared.nix
             ./home/lonsdaleite.nix

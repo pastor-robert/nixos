@@ -44,22 +44,27 @@ in
     packages = [
       ffgrep
 
-      pkgs.claude-code
-      pkgs.gemini-cli
-      pkgs.mtr
+      pkgs.bc
       pkgs.charasay
+      pkgs.claude-code
+      pkgs.file
+      # pkgs.gemini-cli
+      pkgs.killall
       pkgs.kittysay
+      pkgs.mtr
       pkgs.neo-cowsay
+      pkgs.nodejs_22
+      pkgs.pdftk
       pkgs.pokemonsay
       pkgs.ponysay
-      pkgs.tewisay
-      pkgs.file
-      pkgs.pdftk
-      pkgs.bc
-      pkgs.killall
       pkgs.putty
+      pkgs.tewisay
+
     ];
-    sessionPath = [ "$HOME/.local/bin" ];
+    sessionPath = [
+      "$HOME/.npm-global/bin"
+      "$HOME/.local/bin"
+    ];
   };
 
   programs.git = {
