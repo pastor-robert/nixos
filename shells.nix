@@ -74,6 +74,22 @@ in
     '';
   };
 
+  llm = pkgs.mkShellNoCC {
+    packages = [
+      (pkgs.llm.withPlugins {
+        llm-git = true;
+        llm-gemini = true;
+        llm-cmd = true;
+      })
+    ];
+    shellHook = pureSafeHook + ''
+      echo Welcome to the llm shell
+    '';
+    profile = ''
+      export PS1="[llm] $PS1"
+    '';
+  };
+
   buildroot =
     let
       my-fhs = pkgs.buildFHSEnv {

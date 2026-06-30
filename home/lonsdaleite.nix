@@ -46,6 +46,12 @@ in
       pkgs.poppler-utils
       pkgs.kitty
       pkgs-unstable.antigravity-cli
+
+      (pkgs.llm.withPlugins {
+        llm-git = true;
+        llm-gemini = true;
+        llm-cmd = true;
+      })
     ];
     shellAliases = lib.mkForce {
       x = "vi";
