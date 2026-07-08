@@ -9,7 +9,6 @@
       #url = "github:nix-community/home-manager/release-25.11";
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.nixpkgs-unstable.follows = "nixpkgs-unstable";
     };
 
     # for command_not_found_handler
@@ -20,6 +19,8 @@
     git-hooks-nix.inputs.nixpkgs.follows = "nixpkgs";
     duplex.url = "github:pastor-robert/duplex";
     duplex.inputs.nixpkgs.follows = "nixpkgs";
+    instagui.url = "github:pastor-robert/instagui";
+    instagui.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -29,6 +30,7 @@
       home-manager,
       git-hooks-nix,
       duplex,
+      instagui,
       nixpkgs-unstable,
       ...
     }@inputs:
@@ -76,12 +78,14 @@
           inherit pkgs;
           extraSpecialArgs = {
             inherit duplex;
+            inherit instagui;
             inherit pkgs-unstable;
           };
           modules = [
             ./home/shared.nix
             ./home/lonsdaleite.nix
             ./home/duplex.nix
+            ./home/instagui.nix
           ];
         };
         "rob@aws" = home-manager.lib.homeManagerConfiguration {

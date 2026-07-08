@@ -52,6 +52,7 @@ in
         llm-gemini = true;
         llm-cmd = true;
       })
+
     ];
     shellAliases = lib.mkForce {
       x = "vi";

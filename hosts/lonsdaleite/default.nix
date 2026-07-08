@@ -323,6 +323,8 @@
 
       winboat
 
+      qrencode
+
     ];
     pathsToLink = [
       "/share/xdg-desktop-portal"
