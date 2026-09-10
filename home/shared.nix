@@ -59,6 +59,7 @@ in
       pkgs.ponysay
       pkgs.putty
       pkgs.tewisay
+      pkgs._7zip-zstd
 
     ];
     sessionPath = [
