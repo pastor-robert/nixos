@@ -68,6 +68,7 @@ in
 
   # Systemd user services for rclone mounts
   systemd.user.services = {
+    drkonqi-coredump-pickup.unitConfig.ConditionPathExists = "/var/empty";
     rclone-gdrive = {
       Unit = {
         Description = "Mount Google Drive with rclone";
