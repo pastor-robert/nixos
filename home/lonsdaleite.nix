@@ -12,6 +12,37 @@ let
   gdriveSharedMountDir = "/home/rob/gdrive/SharedDrives";
 in
 {
+  programs.tmux = {
+    enable = true;
+    sensibleOnTop = true;
+    shortcut = "x";
+    terminal = "tmux-256color";
+    secureSocket = true;
+
+    extraConfig = ''
+      bind | split-window -h
+      bind - split-window -v
+      unbind '"'
+      unbind %
+
+      # switch panes using Alt-arrow without prefix
+      bind -n M-Left select-pane -L
+      bind -n M-Right select-pane -R
+      bind -n M-Up select-pane -U
+      bind -n M-Down select-pane -D
+
+      # Enable mouse mode (tmux 2.1 and above)
+      set -g mouse on
+
+      # Gnome-terminal doesn't support xterm escape sequences
+      # https://unix.stackexchange.com/questions/348913/copy-selection-to-a-clipboard-in-tmux
+      # set-option -s set-clipboard off
+      # bind-key -T copy-mode MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel "xclip -selection clipboard -i"
+      bind-key -T copy-mode MouseDragEnd1Pane send -X copy-pipe "xclip -selection clipboard -i" \; send -X clear-selection
+      bind-key -T copy-mode-vi MouseDragEnd1Pane send -X copy-pipe "xclip -selection clipboard -i" \; send -X clear-selection
+    '';
+  };
+
   home = {
     username = "rob";
     homeDirectory = "/home/rob";
@@ -33,8 +64,6 @@ in
 
       # rclone for cloud storage mounting
       pkgs.rclone
-      pkgs.pandoc
-      pkgs.texlive.combined.scheme-full
       pkgs.unzip
       pkgs.ghostty
       pkgs.marktext
@@ -52,7 +81,6 @@ in
         llm-gemini = true;
         llm-cmd = true;
       })
-
     ];
     shellAliases = lib.mkForce {
       x = "vi";

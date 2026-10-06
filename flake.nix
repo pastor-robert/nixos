@@ -86,6 +86,7 @@
             ./home/lonsdaleite.nix
             ./home/duplex.nix
             ./home/instagui.nix
+            ./home/md2pdf.nix
           ];
         };
         "rob@aws" = home-manager.lib.homeManagerConfiguration {
